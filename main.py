@@ -1,15 +1,13 @@
 import os
 import time
-import pygame
 from gtts import gTTS
 import streamlit as st
 import speech_recognition as sr
 from googletrans import LANGUAGES, Translator
 
-isTranslateOn = False 
+isTranslateOn = False
 
 translator = Translator()  # Initialize the translator module.
-pygame.mixer.init()  # Initialize the mixer module.
 
 # Create a mapping between language names and language codes
 language_mapping = {name: code for code, name in LANGUAGES.items()}
@@ -28,8 +26,12 @@ def text_to_voice(text_data, to_language):
     try:
         myobj = gTTS(text=text_data, lang=to_language, slow=False)
         myobj.save("cache_file.mp3")
-        audio = pygame.mixer.Sound("cache_file.mp3")  # Load a sound.
-        audio.play()
+
+        # Use Streamlit's audio player to play the sound
+        audio_file = open("cache_file.mp3", "rb")
+        audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format="audio/mp3")
+
         os.remove("cache_file.mp3")
     except Exception as e:
         st.error(f"Text-to-speech error: {e}")
